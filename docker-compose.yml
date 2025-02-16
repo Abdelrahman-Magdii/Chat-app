@@ -1,0 +1,35 @@
+services:
+  mongodb:
+    image: mongo
+    container_name: mongo_db
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db  # Corrected volume path for MongoDB data storage
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=mongo
+    networks:
+      - mongo_network  # Add a network for communication between services
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo_express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=mongo
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=mongo
+      - ME_CONFIG_MONGODB_SERVER=mongodb  # Use the service name as the host
+    depends_on:
+      - mongodb  # Ensure MongoDB starts first
+    networks:
+      - mongo_network  # Use the same network as MongoDB
+
+volumes:
+  mongo: {}  # Define the volume for MongoDB data
+
+networks:
+  mongo_network:  # Define a custom network for the services
+    driver: bridge
